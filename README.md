@@ -5,18 +5,24 @@ This program transforms images into ASCII-art, which basically is to generate an
 Here you can see the original example and the output:
 ![ascii](./readme-assets/ascii-art.png)
 
-## Usave
+## Usage
 To use the program you just have to:
-* Linux:
+
+- Install python3 libraries needed
 ```shell
-# Install python3 libraries needed
 pip install -r requirements.txt
 ```
+1. Linux:
 ```python3
-# Runt the app
+# Run the app
 ./art-ascii.py
 ```
 OR
 ```shell
 python3  art-ascii.py
+```
+
+2. Windows:
+```shell
+python art-ascii.py
 ```
