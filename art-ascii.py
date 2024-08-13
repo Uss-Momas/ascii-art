@@ -1,76 +1,85 @@
 #!/usr/bin/env python3
 from PIL import Image
+from typing import List, Tuple
 
 with Image.open("./ascii-pineapple.jpg") as img:
     img.load()
 
-img = img.transpose(Image.ROTATE_90)
-x, y = img.size
-x, y = img.width, img.height
-x, y = int(x / 2), int(y / 2)
-img = img.resize((x, y), Image.Resampling.LANCZOS)
-print("Successfully loaded image!")
-print(f"Image size: {x} x {y}")
+MAX_INTENSITY = 255
+ASCII_CHARS = "`^\",:;Il!i~+_-?][}{1)(|\\/tfjrxnuvczXYUJCLQ0OZmwqpdbkhao*#MW&8%B@$"
+MAX_ASCII_CHAR_POSITION = len(ASCII_CHARS) - 1
 
+def get_pixel_matrix(img, width: int, height: int) -> List[List[Tuple[int]]]:
+    """Returns a 2D pixel Matrix"""
+    matrix = []
+    for y in range(height):
+        row = []
+        for x in range(width):
+            pixel = img.getpixel((x, y))
+            row.append(pixel)
+        matrix.append(list(reversed(row)))
+    return matrix
+
+
+def get_intensity_matrix(pixel_matrix: List[List[Tuple[int]]]) -> List[List[int]]:
+    """RETURNS a 2D Intensity matrix
+    Represents a brightness or Luminosity of a RGB tuple
+    """
+    intensity: List[List] = []
+    for pixel_row in pixel_matrix:
+        row = []
+        for rgb in pixel_row:
+        # using the average brightness method
+            average = int(sum(rgb) / 3)
+            row.append(average)
+        intensity.append(row)
+    return intensity
+
+
+def get_ascii_letter(intensity: int) -> str:
+    """Returns a letter representing a intensity"""
+    char_position = int ((intensity * MAX_ASCII_CHAR_POSITION) / MAX_INTENSITY)
+    return ASCII_CHARS[char_position]
+
+
+
+def get_ascii_matrix(intensity_matrix: List[List[int]]) -> List[List[str]]:
+    """Returns a 2D Matrix with ascii characters representing
+    the image
+    """
+    ascii_matrix = []
+    # MAP THE INTENSITY TO A ASCII CHARACTER
+    for intensity_row in intensity_matrix:
+        ascii_row = []
+        for intensity in intensity_row:
+            char = get_ascii_letter(intensity)
+            ascii_row.append(char)
+        ascii_matrix.append(ascii_row)
+    return ascii_matrix
+
+
+def print_ascii(ascii_matrix: List[List[str]], number_repeats: int = 1) -> None:
+    """PRINT THE ASCII ART"""
+    for row in ascii_matrix:
+        for letter in row:
+            print(letter * number_repeats, end="")
+        print()
+
+
+width, height = int(img.width / 2), int(img.height / 2)
+img = img.resize((width, height), Image.Resampling.LANCZOS)
+print("Successfully loaded image!")
+print(f"Image size: {width} x {height}")
 
 # CREATE A 2D MATRIX FOR IMAGE DATA
-pixel_matrix = []
-
-for i in range(x):
-    pixel_row = []
-    for j in range(y):
-        pixel = img.getpixel([i, j])
-        pixel_row.append(pixel)
-    pixel_matrix.append(list(reversed(pixel_row)))
-
-# print(pixel_matrix[0])
-# print("===================================================================================================")
-# print(list(reversed(pixel_matrix[0])))
-
-
-
-# for x in range(len(pixel_matrix)):
-    # for y in range(len(pixel_matrix[x])):
-        # pixel = pixel_matrix[x][y]
-        # print(pixel)
-        # break
-        # Now do something with the pixel... 
+pixel_matrix = get_pixel_matrix(img, width, height)
 
 # PROCESS RGB tuple turn into single Brightness number
-average_bright = []
-for pixel_row in pixel_matrix:
-    avg_bright_row = []
-    for rgb in pixel_row:
-        # compute the average number of rgb tuple
-        average = int(sum(rgb) / 3) # METHOD 1
-        # average = 0.21 * rgb[0] + 0.72 * rgb[1] + 0.07 * rgb[2] # Method 2
-        avg_bright_row.append(average)
-    average_bright.append(avg_bright_row)
+average_bright = get_intensity_matrix(pixel_matrix)
 
-print("Iterating through pixel brightnesses:")
-for brightness in average_bright:
-    print(brightness)
-    break
+# PRODUCE THE ASCII MATRIX REPRESENTING THE IMAGE
+ascii_matrix = get_ascii_matrix(average_bright)
 
-ascii_chars = "`^\",:;Il!i~+_-?][}{1)(|\\/tfjrxnuvczXYUJCLQ0OZmwqpdbkhao*#MW&8%B@$"
+# PRINTS THE ART
+print_ascii(ascii_matrix, 2)
 
-max_bright = 255
-max_char_pos = len(ascii_chars) - 1
-bright = 255
-char_position = int((bright * max_char_pos) / max_bright) # formula to map BRIGHTNESS TO ASCII CHARACTER
-print(ascii_chars[char_position])
-
-ascii_matrix = []
-for avg_bright_row in average_bright:
-    ascii_row = []
-    for bright in avg_bright_row:
-        char_position = int((bright * max_char_pos) / max_bright)
-        ascii_row.append(ascii_chars[char_position])
-    ascii_matrix.append(ascii_row)
-print("Successfully constructed ASCII matrix!")
-print(f"ASCII matrix size: {len(ascii_matrix)} x {len(ascii_matrix[0])}")
-print("Iterating through pixel ASCII characters:")
-for row in ascii_matrix:
-    for ascii in row:
-        print(ascii * 3, end="")
-    print()
