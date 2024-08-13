@@ -17,7 +17,7 @@ def get_pixel_matrix(img, width: int, height: int) -> List[List[Tuple[int]]]:
         for x in range(width):
             pixel = img.getpixel((x, y))
             row.append(pixel)
-        matrix.append(list(reversed(row)))
+        matrix.append(row)
     return matrix
 
 
