@@ -3,7 +3,12 @@
 This program transforms images into ASCII-art, which basically is to generate an image with characters of the ASCII Table
 
 Here you can see the original example and the output:
-![ascii](./readme-assets/ascii-art.png)
+
+* <span style="color: red">ORIGINAL</span>
+![original](./readme-assets/1.ascii-pineapple.jpg)
+
+* <span style="color: blue">ASCII ART</span>
+![ascii](./readme-assets/1.ASCII-Art.png)
 
 ## Usage
 To use the program you just have to:
