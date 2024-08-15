@@ -42,7 +42,7 @@ MAX_INTENSITY = 255
 ASCII_CHARS = "`^\",:;Il!i~+_-?][}{1)(|\\/tfjrxnuvczXYUJCLQ0OZmwqpdbkhao*#MW&8%B@$"
 MAX_ASCII_CHAR_POSITION = len(ASCII_CHARS) - 1
 
-def get_pixel_matrix(img, width: int, height: int) -> List[List[Tuple[int]]]:
+def get_pixel_matrix(img, width: int, height: int) -> List[List[Tuple[int, int, int]]]:
     """Returns a 2D pixel Matrix"""
     matrix = []
     for y in range(height):
@@ -54,7 +54,24 @@ def get_pixel_matrix(img, width: int, height: int) -> List[List[Tuple[int]]]:
     return matrix
 
 
-def get_intensity_matrix(pixel_matrix: List[List[Tuple[int]]]) -> List[List[int]]:
+def intensity_algorithm(algorithm: str, rgb: Tuple[int, int , int]) -> int:
+    """Calculates the proper intensity algorithm
+    Possible values:
+        - "brightness"
+        - "min/max"
+        - "luminosity"
+    """
+    if algorithm == 'average':
+        return int(sum(rgb) / 2)
+    if algorithm == 'min/max':
+        return int((max(rgb) + min(rgb)) / 2)
+    # otherwise is luminosity
+    R = rgb[0]
+    G = rgb[1]
+    B = rgb[2]
+    return int((0.21 * R) + (0.72 * G) + (0.07 * B))
+
+def get_intensity_matrix(pixel_matrix: List[List[Tuple[int, int, int]]], intensity_algo: str ="average") -> List[List[int]]:
     """RETURNS a 2D Intensity matrix
     Represents a brightness or Luminosity of a RGB tuple
     """
@@ -63,7 +80,7 @@ def get_intensity_matrix(pixel_matrix: List[List[Tuple[int]]]) -> List[List[int]
         row = []
         for rgb in pixel_row:
         # using the average brightness method
-            average = int(sum(rgb) / 3)
+            average = intensity_algorithm(intensity_algo, rgb)
             row.append(average)
         intensity.append(row)
     return intensity
@@ -108,7 +125,7 @@ print(f"Image size: {width} x {height}")
 pixel_matrix = get_pixel_matrix(img, width, height)
 
 # PROCESS RGB tuple turn into single Brightness number
-average_bright = get_intensity_matrix(pixel_matrix)
+average_bright = get_intensity_matrix(pixel_matrix, intensity_algo="luminosity")
 
 # PRODUCE THE ASCII MATRIX REPRESENTING THE IMAGE
 ascii_matrix = get_ascii_matrix(average_bright)
