@@ -42,14 +42,35 @@ MAX_INTENSITY = 255
 ASCII_CHARS = "`^\",:;Il!i~+_-?][}{1)(|\\/tfjrxnuvczXYUJCLQ0OZmwqpdbkhao*#MW&8%B@$"
 MAX_ASCII_CHAR_POSITION = len(ASCII_CHARS) - 1
 
-def get_pixel_matrix(img, width: int, height: int) -> List[List[Tuple[int, int, int]]]:
+
+def invert_brightness_number(rgb):
+    """Function to invert an RGB matrix brightness
+    Witch means:
+        - dark becomes light (255 -> 0) and light becomes dark (0 -> 255)
+        formula:
+            - value = m - n
+            where:
+                - m: 255
+                - n: 0, 1, 2...
+    Returns:
+        - mapped value on the scale to 0-255
+    """
+    NEW_MIN = 255
+    r, g, b = NEW_MIN - rgb[0], NEW_MIN - rgb[1], NEW_MIN - rgb[2]
+    return r, g, b
+
+          
+def get_pixel_matrix(img, width: int, height: int, invert: bool = False) -> List[List[Tuple[int, int, int]]]:
     """Returns a 2D pixel Matrix"""
     matrix = []
     for y in range(height):
         row = []
         for x in range(width):
             pixel = img.getpixel((x, y))
-            row.append(pixel)
+            if not invert:
+                row.append(pixel)
+            else:
+                row.append(invert_brightness_number(pixel))
         matrix.append(row)
     return matrix
 
@@ -62,7 +83,7 @@ def intensity_algorithm(algorithm: str, rgb: Tuple[int, int , int]) -> int:
         - "luminosity"
     """
     if algorithm == 'average':
-        return int(sum(rgb) / 2)
+        return int(sum(rgb) / 3)
     if algorithm == 'min/max':
         return int((max(rgb) + min(rgb)) / 2)
     # otherwise is luminosity
@@ -112,7 +133,7 @@ def print_ascii(ascii_matrix: List[List[str]], number_repeats: int = 1) -> None:
     """PRINT THE ASCII ART"""
     for row in ascii_matrix:
         for letter in row:
-            print(Fore.GREEN, letter * number_repeats, end="")
+            print(letter * number_repeats, end="")
         print()
 
 
@@ -122,10 +143,10 @@ print("Successfully loaded image!")
 print(f"Image size: {width} x {height}")
 
 # CREATE A 2D MATRIX FOR IMAGE DATA
-pixel_matrix = get_pixel_matrix(img, width, height)
+pixel_matrix = get_pixel_matrix(img, width, height, invert=False)
 
 # PROCESS RGB tuple turn into single Brightness number
-average_bright = get_intensity_matrix(pixel_matrix, intensity_algo="luminosity")
+average_bright = get_intensity_matrix(pixel_matrix, intensity_algo="average")
 
 # PRODUCE THE ASCII MATRIX REPRESENTING THE IMAGE
 ascii_matrix = get_ascii_matrix(average_bright)
