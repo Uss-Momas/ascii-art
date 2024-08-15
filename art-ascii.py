@@ -1,8 +1,12 @@
 #!/usr/bin/env python3
+import colorama
+from colorama import Fore
 from os import path
 from PIL import Image
 from sys import argv
 from typing import List, Tuple
+
+colorama.init()
 
 if len(argv) != 2:
     print("Usage: ./art-ascii.py image-source.jpeg")
@@ -91,7 +95,7 @@ def print_ascii(ascii_matrix: List[List[str]], number_repeats: int = 1) -> None:
     """PRINT THE ASCII ART"""
     for row in ascii_matrix:
         for letter in row:
-            print(letter * number_repeats, end="")
+            print(Fore.GREEN, letter * number_repeats, end="")
         print()
 
 
