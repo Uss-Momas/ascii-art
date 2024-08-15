@@ -31,3 +31,5 @@ python3  art-ascii.py
 ```shell
 python art-ascii.py
 ```
+
+You may need to Resize your terminal with:```ctrl +``` or ```ctrl -```
