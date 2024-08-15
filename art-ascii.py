@@ -1,8 +1,37 @@
 #!/usr/bin/env python3
+from os import path
 from PIL import Image
+from sys import argv
 from typing import List, Tuple
 
-with Image.open("./ascii-pineapple.jpg") as img:
+if len(argv) != 2:
+    print("Usage: ./art-ascii.py image-source.jpeg")
+    exit(1)
+img_path = argv[1]
+
+if not path.exists(img_path):
+    print(f"Path {img_path}: Doesn't exists!")
+    exit(1)
+
+if not path.isfile(img_path):
+    print(f"Path {img_path}: Is Not a File!")
+    exit(1)
+
+
+def is_image(img_path: str) -> bool:
+    try:
+        with Image.open(img_path) as img:
+            img.verify()
+        return True
+    except (IOError, SyntaxError):
+        return False
+
+if not is_image(img_path):
+    print(f"Path {img_path}: Is not an Image!")
+    exit(1)
+
+
+with Image.open(img_path) as img:
     img.load()
 
 MAX_INTENSITY = 255
